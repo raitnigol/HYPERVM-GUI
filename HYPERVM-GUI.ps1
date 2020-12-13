@@ -5,6 +5,11 @@ Just select the right parameters for your virtual machine and with a single pres
 the script does everything magically for you.
 #>
 
+# To even create Hyper-V virtual machines at the first place, you must have RSAT-Hyper-V-Tools installed.
+# So we should check if the user has installed the tool and if not, ask the user if they would like to install it.
+
+# to be implemented later because I do not have access to a Windows Server.
+
 
 # We want the GUI to autoscale, thus we need to get the current users display resolution
 $ClientSize = [System.Windows.Forms.SystemInformation]::VirtualScreen
