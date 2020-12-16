@@ -13,6 +13,28 @@ If you do not see your problem captured, please file a new issue.
 [What is DIHUB?](https://www.bcskoolitus.ee/en/project/digital-innovation-hub-cloud-based-services-dihub-project-co-funded-erasmus-programme/)
 Three students from Tartu Vocational Education Center are participating in the DIHUB project. The goal is to make a secure and reliable backup solution to [BCS Koolitus](https://www.bcskoolitus.ee/en). BCS Koolitus has been the leading ICT continuing training company in Estonia since 1993.
 
+## Test environments
+
+* Windows Server 2008 R2
+
+- [ ] Not tested yet.
+
+* Windows Server 2012
+- [ ] Not tested yet.
+
+* Windows Server 2012 R2
+- [ ] Not tested yet.
+
+* Windows Server 2016
+
+  Additional notes: soon to be tested.
+- [ ] Not tested yet.
+
+* Windows Server 2019
+
+  Additional notes: soon to be tested.
+- [ ] Not tested yet.
+
 ## Maintainers
 
 * [Rait Nigol](https://github.com/raitnigol)
