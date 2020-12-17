@@ -84,11 +84,6 @@ $HYPERVM_GUI_PROPERTIES_PAGE.Text = 'Properties'
 $TabControl.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE)
 
 
-$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW = New-Object System.Windows.Forms.DataGridView
-$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
-
-
-# This section is reserved for the main page
 # To even create Hyper-V virtual machines at the first place, you must have RSAT-Hyper-V-Tools installed.
 # So we should check if the user has installed the tool and if not, ask the user if they would like to install it.
 
@@ -104,10 +99,53 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.BackColor = 'Gray'
 $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
 
 
-# This section is reserved for the second page, Virtual Machines
+# Add a datagridview to list all currently available virtual machines
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW = New-Object System.Windows.Forms.DataGridView
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Anchor = 'top, bottom, left, right'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSizeColumnsMode = 'AllCells'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.TabIndex = 0
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.RowHeadersVisible = $false
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Location = $System_Drawing_Point
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Size = $System_Drawing_Size
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToAddRows = $false
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToResizeRows = $false
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToResizeRows = $false
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToDeleteRows = $false
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.ReadOnly = $true
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.BackColor = 'White'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.ColumnCount = 7
+
+# Column 1 to show the name of the virtual machine
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[0].Name = 'Virtual Machine'
+
+# Column 2 to show the state of the virtual machine
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[1].Name = 'State'
+
+# Column 3 to show the CPU usage of the VM
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[2].Name = 'CPU usage (%)'
+
+# Column 4 to show the memory assigned to the VM
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[3].Name = 'Memory Assigned'
+
+# Column 5 to show the uptime of the VM.
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[4].Name = 'Uptime'
+
+# Column 6 to show the status of the currently running virtual machine
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[5].Name = 'Status'
+
+# Column 7 to show the version of the virtual machine
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Columns[6].Name = 'Version'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSizeColumnsMode = 'Fill'
+
+#$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSizeRowsMode = 'AllCells'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToResizeColumns = $true
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AllowUserToOrderColumns = $true
+
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE.Controls.Add($HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW)
 
 
-# This section is reserved for the third page, properties
 # Add a label to the third page showing current powershell version
 $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Text = $("Current PowerShell version: $PS_CURRENT_VERSION")
