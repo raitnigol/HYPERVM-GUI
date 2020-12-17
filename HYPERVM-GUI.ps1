@@ -3,6 +3,9 @@ This code is for making your life easier when you need to create Hyper-V virtual
 fast and easily.
 Just select the right parameters for your virtual machine and with a single press of a button,
 the script does everything magically for you.
+
+.NAME
+    HYPERVM-GUI
 #>
 
 
@@ -111,7 +114,6 @@ $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Text = $("Current PowerShe
 $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 8)
 $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Dock = 'Bottom'
 
-
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL)
 
 # Add a label to the third page howing current Windows version
@@ -122,7 +124,6 @@ $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Margin = 50
 
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL)
-
 
 
 # Show the GUI
