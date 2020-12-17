@@ -3,6 +3,9 @@ This code is for making your life easier when you need to create Hyper-V virtual
 fast and easily.
 Just select the right parameters for your virtual machine and with a single press of a button,
 the script does everything magically for you.
+
+.NAME
+    HYPERVM-GUI
 #>
 
 
@@ -11,6 +14,12 @@ $ClientSize = [System.Windows.Forms.SystemInformation]::VirtualScreen
 $ClientWidth = $ClientSize.Width
 $ClientHeight = $ClientSize.Height
 
+
+# Get the version that PowerShell is running
+$PS_CURRENT_VERSION = $PSVersionTable.PSVersion
+
+# Get the Windows version that the current computer or server runs
+$WINDOWS_CURRENT_VERSION = (Get-WmiObject -class Win32_OperatingSystem).Caption
 
 # First, initiate the form.
 Add-Type -AssemblyName System.Windows.Forms
@@ -72,12 +81,14 @@ $HYPERVM_GUI_PROPERTIES_PAGE.DataBindings.DefaultDataSourceUpdateMode = 0
 $HYPERVM_GUI_PROPERTIES_PAGE.UseVisualStyleBackColor = $true
 $HYPERVM_GUI_PROPERTIES_PAGE.Text = 'Properties'
 
-$TabControl.Controls.Add($HYPERVM_GUI_DATAGRIDVIEW_PAGE)
+$TabControl.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE)
 
 
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW = New-Object System.Windows.Forms.DataGridView
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
 
+
+# This section is reserved for the main page
 # To even create Hyper-V virtual machines at the first place, you must have RSAT-Hyper-V-Tools installed.
 # So we should check if the user has installed the tool and if not, ask the user if they would like to install it.
 
@@ -91,6 +102,28 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Font = New-Object System.
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'TopCenter'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.BackColor = 'Gray'
 $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
+
+
+# This section is reserved for the second page, Virtual Machines
+
+
+# This section is reserved for the third page, properties
+# Add a label to the third page showing current powershell version
+$HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Text = $("Current PowerShell version: $PS_CURRENT_VERSION")
+$HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 8)
+$HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Dock = 'Bottom'
+
+$HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL)
+
+# Add a label to the third page howing current Windows version
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Text = $("Current Windows version: $WINDOWS_CURRENT_VERSION")
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Font = New-Object System.Drawing.Font("Microsoft Sans Serif", 8)
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Dock = 'Bottom'
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Margin = 50
+
+$HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL)
 
 
 # Show the GUI
