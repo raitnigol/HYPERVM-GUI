@@ -60,7 +60,6 @@ $HYPERVM_GUI_MAIN_WINDOW.Controls.Add($TabControl)
 # Add main page to the GUI
 $HYPERVM_GUI_MAIN_PAGE = New-Object System.Windows.Forms.TabPage
 $HYPERVM_GUI_MAIN_PAGE.DataBindings.DefaultDataSourceUpdateMode = 0
-$HYPERVM_GUI_MAIN_PAGE.UseVisualStyleBackColor = $tue
 $HYPERVM_GUI_MAIN_PAGE.Text = 'Create a VM'
 
 $TabControl.Controls.Add($HYPERVM_GUI_MAIN_PAGE)
@@ -84,10 +83,6 @@ $HYPERVM_GUI_PROPERTIES_PAGE.Text = 'Properties'
 $TabControl.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE)
 
 
-$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW = New-Object System.Windows.Forms.DataGridView
-$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
-
-
 # This section is reserved for the main page
 # To even create Hyper-V virtual machines at the first place, you must have RSAT-Hyper-V-Tools installed.
 # So we should check if the user has installed the tool and if not, ask the user if they would like to install it.
@@ -97,12 +92,89 @@ $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
 # Add a label that when not installed, shows that the Hyper-V tools are not yet installed.
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Text = "Module: RSAT-Hyper-V-Tools has not yet been installed."
-$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Dock = 'Top'
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'TopCenter'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.BackColor = 'Gray'
+
 $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
 
+# Create a table layout panel so we could buil the main page for building the virtual machine.
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL = New-Object System.Windows.Forms.TableLayoutPanel
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.AutoSizeMode = 'GrowAndShrink'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Dock = 'Fill'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.RowCount = 1
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.ColumnCount = 2
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.BackColor = 'White'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Anchor = 'top, left'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.ColumnStyles = 'Absolute'
+
+$HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL)
+
+# Create a label that lets to select the name of the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL.Text = 'VM Name'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL)
+
+# Create a textbox that lets to select the name of the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX = New-Object System.Windows.Forms.TextBox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Multiline = $false
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX)
+
+# Create a label that lets to select the amount of ram in GB for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL.Text = 'RAM (GB)'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL)
+
+# Create a textbox that lets to select the amount of RAM in GB for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX = New-Object System.Windows.Forms.TextBox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Multiline = $false
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX)
+
+# Create a label that lets to select the amount of CPU's to be assigned for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL.Text = 'CPU Count'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL)
+
+# Create a textbox that lets to select the amount of CPU's to be assigned to the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX = New-Object System.Windows.Forms.Textbox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Multiline = $false
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX)
+
+# Create a label that lets to select the generation for the virtual machine (gen 1 or gen 2)
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL.Text = 'Generation'
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL)
+
+# First of all, create a groupbox for two radio buttons to choose the generation for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX = New-Object System.Windows.Forms.GroupBox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX.AutoSize = $true
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX)
+
+# Add two radio butons to the groupbox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1 = New-Object System.Windows.Forms.RadioButton
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.Text = 'Generation 1'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2 = New-Object System.Windows.Forms.RadioButton
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.Text = 'Generation 2'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX.Controls.AddRange(@($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1, $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2))
 
 # This section is reserved for the second page, Virtual Machines
 
