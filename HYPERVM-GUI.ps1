@@ -21,6 +21,9 @@ $PS_CURRENT_VERSION = $PSVersionTable.PSVersion
 # Get the Windows version that the current computer or server runs
 $WINDOWS_CURRENT_VERSION = (Get-WmiObject -class Win32_OperatingSystem).Caption
 
+# Get the Windows RAM amount
+$TOTAL_CLIENT_MEMORY = Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | ForEach {'{0:N2}' -F (([math]::round(($_.Sum / 1GB),2)))}
+
 # First, initiate the form.
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
@@ -60,6 +63,7 @@ $HYPERVM_GUI_MAIN_WINDOW.Controls.Add($TabControl)
 # Add main page to the GUI
 $HYPERVM_GUI_MAIN_PAGE = New-Object System.Windows.Forms.TabPage
 $HYPERVM_GUI_MAIN_PAGE.DataBindings.DefaultDataSourceUpdateMode = 0
+$HYPERVM_GUI_MAIN_PAGE.UseVisualStyleBackColor = $true
 $HYPERVM_GUI_MAIN_PAGE.Text = 'Create a VM'
 
 $TabControl.Controls.Add($HYPERVM_GUI_MAIN_PAGE)
@@ -97,7 +101,7 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Font = New-Object System.
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'TopCenter'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.BackColor = 'Gray'
 
-$HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
+# Disable as of right now - $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
 
 # Create a table layout panel so we could buil the main page for building the virtual machine.
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL = New-Object System.Windows.Forms.TableLayoutPanel
@@ -105,76 +109,115 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.AutoSize = $true
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.AutoSizeMode = 'GrowAndShrink'
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Dock = 'Fill'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.RowCount = 1
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.ColumnCount = 2
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.RowCount = 5
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.ColumnCount = 5
 
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.BackColor = 'White'
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Anchor = 'top, left'
-
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.ColumnStyles = 'Absolute'
 
 $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL)
 
 # Create a label that lets to select the name of the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL.Text = 'VM Name'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL.Anchor = 'left'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL)
+#Add the label to the first row and column 
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_LABEL, 0, 0)
 
 # Create a textbox that lets to select the name of the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX = New-Object System.Windows.Forms.TextBox
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Multiline = $false
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Anchor = 'left, right'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX)
+# Add the textbox to the first row and second column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX, 1, 0)
 
 # Create a label that lets to select the amount of ram in GB for the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL.Text = 'RAM (GB)'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL.Anchor = 'left'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL)
+# Add the label to the second row and first column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_LABEL, 0, 1)
 
 # Create a textbox that lets to select the amount of RAM in GB for the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX = New-Object System.Windows.Forms.TextBox
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Multiline = $false
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Anchor = 'left, right'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX)
+# Add the textbox to the second row and second column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX, 1, 1)
 
 # Create a label that lets to select the amount of CPU's to be assigned for the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL.Text = 'CPU Count'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL.Anchor = 'left'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL)
+# Add the textbox to the third row and first column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_LABEL, 0, 2)
 
 # Create a textbox that lets to select the amount of CPU's to be assigned to the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX = New-Object System.Windows.Forms.Textbox
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Multiline = $false
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Anchor = 'left, right'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX)
+# Add the textbox to the third row and second column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX, 1, 2)
 
 # Create a label that lets to select the generation for the virtual machine (gen 1 or gen 2)
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL.Text = 'Generation'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL.Anchor = 'left'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL)
+# Add the label to the fourth row and first column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VM_GENERATION_LABEL, 0, 3)
 
-# First of all, create a groupbox for two radio buttons to choose the generation for the virtual machine
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX = New-Object System.Windows.Forms.GroupBox
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX.AutoSize = $true
+# Add a table layout panel to already existing table layout panel to add two radio buttons inside
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL = New-Object System.Windows.Forms.TableLayoutPanel
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.AutoSizeMode = 'GrowAndShrink'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX)
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.RowCount = 1
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.ColumnCount = 2
 
-# Add two radio butons to the groupbox
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1 = New-Object System.Windows.Forms.RadioButton
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.Text = 'Generation 1'
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.AutoSize = $true
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.BackColor = 'White'
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.Anchor = 'left, top, right'
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2 = New-Object System.Windows.Forms.RadioButton
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.Text = 'Generation 2'
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.AutoSize = $true
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+# Add the table layout panel to the fourth row and second column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL, 1, 3)
 
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX.Controls.AddRange(@($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_1, $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_GROUPBOX_GEN_2))
+# Then create two radio buttons to put inside the table layout panel
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_1 = New-Object System.Windows.Forms.RadioButton
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_1.Text = 'Generation 1'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_1.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_1.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+
+# Add the first radio button to the table layout panel
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_1)
+
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_2 = New-Object System.Windows.Forms.RadioButton
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_2.Text = 'Generation 2'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_2.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_2.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+
+# Add the second radio button to the table layout panel
+$HYPERVM_GUI_MAIN_PAGE_RADIO_BUTTON_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RADIO_BUTTON_GEN_2)
+
+# Create a label that lets to select the switch for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_LABEL.Text = 'Switch Name'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_LABEL.Anchor = 'left'
+
+# Add the label to the first row and third column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_LABEL, 2, 0)
+
+# Create a combobox to select the switch for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX = New-Object System.Windows.Forms.ComboBox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.ReadOnly = $true
+
+# Add the combobox to the first row and fourth column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX, 3, 0)
 
 # This section is reserved for the second page, Virtual Machines
 
@@ -188,15 +231,34 @@ $HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL.Dock = 'Bottom'
 
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_POWERSHELL_VERSION_LABEL)
 
-# Add a label to the third page howing current Windows version
+# Add a label to the third page showing current Windows version
 $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Text = $("Current Windows version: $WINDOWS_CURRENT_VERSION")
-$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Font = New-Object System.Drawing.Font("Microsoft Sans Serif", 8)
+$HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 8)
 $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL.Margin = 50
 
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_WINDOWS_VERSION_LABEL)
 
+# Add a label to the third page showing the RAM amount that the current client has
+$HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL.Text = $("Physical Memory: $TOTAL_CLIENT_MEMORY GB")
+$HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 8)
+$HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL.Dock = 'Bottom'
+$HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL)
+
+# Add logic and functions to the code
+# Add logic to the RAM textbox, remove all characters that are not 0-9
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({
+    # finds all characters that are not 0-9 and replaces them with '' (nothing)
+    if ($this.Text -match '[^0-9]') {
+        $CURSOR_POS = $this.SelectionStart
+        $this.Text = $This.Text -replace '[^0-9]',''
+        # Move the cursor to the end of the text
+        $this.SelectionStart = $this.Text.Length
+    }
+})
+ 
 
 # Show the GUI
 [void]$HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
