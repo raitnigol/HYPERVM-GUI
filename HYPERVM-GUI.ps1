@@ -239,6 +239,23 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Anchor = 'left, right'
 # Add the textbox to the second row and fourth column
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX, 3, 1)
 
+# Create a label to select the Boot ISO for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL.Text = 'Boot ISO'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL.Anchor = 'left'
+
+# Add the label to the third row and third column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL, 2, 2)
+
+# Create a textbox to show the selected boot ISO for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX = New-Object System.Windows.Forms.Textbox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Multiline = $false
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Anchor = 'left, right'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.ReadOnly = $true
+
+# Add the textbox to the third row and third column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX, 3, 2)
+
 
 # This section is reserved for the second page, Virtual Machines
 
@@ -269,8 +286,14 @@ $HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL)
 
 # Add logic and functions to the code
-# Add logic to the RAM textbox, remove all characters that are not 0-9
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({
+# Add logic to the textboxes, remove all characters that are not 0-9
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
+
+
+# The code for removing the numbers from the textboxes
+function REMOVE-LETTERS {
     # finds all characters that are not 0-9 and replaces them with '' (nothing)
     if ($this.Text -match '[^0-9]') {
         $CURSOR_POS = $this.SelectionStart
@@ -278,8 +301,7 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({
         # Move the cursor to the end of the text
         $this.SelectionStart = $this.Text.Length
     }
-})
- 
+}
 
 # Show the GUI
 [void]$HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
