@@ -311,19 +311,44 @@ $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RA
 
 # Add logic and functions to the code
 # Add logic to the textboxes, remove all characters that are not 0-9
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({REMOVE-LETTERS})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({Remove-Letters})
 
+# Add logic to the browse button
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click({Browse-Files})
 
 # The code for removing the numbers from the textboxes
-function REMOVE-LETTERS {
+function Remove-Letters {
     # finds all characters that are not 0-9 and replaces them with '' (nothing)
     if ($this.Text -match '[^0-9]') {
         $CURSOR_POS = $this.SelectionStart
         $this.Text = $This.Text -replace '[^0-9]',''
         # Move the cursor to the end of the text
         $this.SelectionStart = $this.Text.Length
+    }
+}
+
+# The code for browsing when pressing the browse button
+function Browse-Files {
+    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
+    Filter = ".ISO files (*iso)|*.iso|All files(*.*)|*.*"
+    }
+    
+    $OpenDialog = $FileBrowser.ShowDialog()
+    
+    if ($OpenDialog -eq "OK")
+    {
+        $BOOT_ISO = $FileBrowser.FileName
+
+        $Extension = [IO.Path]::GetExtension($BOOT_ISO)
+        if ($Extension -eq ".iso") {
+            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Text = $BOOT_ISO
+        }
+        else {
+            [System.Windows.MessageBox]::Show('File extension is not .iso', 'File extension must be .iso', 'Ok', 'Warning')
+        }
     }
 }
 
