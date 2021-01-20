@@ -317,6 +317,15 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON.TextAlign = 'mi
 # Add the browse button to the first row and first column of the VHD root table layout panel
 $HYPERVM_GUI_MAIN_PAGE_VHD_ROOT_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON, 0, 0)
 
+# Create a textbox to display the VHD root path
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX = New-Object System.Windows.Forms.TextBox
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.Anchor = 'left, right'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.Multiline = $false
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.ReadOnly = $true
+
+# Add the textbox to the first row and second column of the VHD root table layout panel
+$HYPERVM_GUI_MAIN_PAGE_VHD_ROOT_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX, 1, 0)
+
 # This section is reserved for the second page, Virtual Machines
 
 
@@ -352,8 +361,11 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({Re
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({Remove-Letters})
 
-# Add logic to the browse button
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click({Browse-Files})
+# Add logic to the boot iso browse button
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click({Browse-Iso-Files})
+
+# Add logic to the vhd root browse button
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON.Add_Click({Browse-Vhdx-Files})
 
 # The code for removing the numbers from the textboxes
 function Remove-Letters {
@@ -367,10 +379,10 @@ function Remove-Letters {
 }
 
 # The code for browsing when pressing the browse button
-function Browse-Files {
+function Browse-Iso-Files {
     $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
     InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
-    Filter = ".ISO files (*iso)|*.iso|All files(*.*)|*.*"
+    Filter = ".iso files (*iso)|*.iso|All files(*.*)|*.*"
     }
     
     $OpenDialog = $FileBrowser.ShowDialog()
@@ -385,6 +397,28 @@ function Browse-Files {
         }
         else {
             [System.Windows.MessageBox]::Show('File extension is not .iso', 'File extension must be .iso', 'Ok', 'Warning')
+        }
+    }
+}
+
+function Browse-Vhdx-Files { 
+    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
+    Filter = ".vhdx files (*vhdx)|*.vhdx|All files(*.*)|**"
+    }
+
+    $OpenDialog = $FileBrowser.ShowDialog()
+
+    if ($OpenDialog -eq "OK")
+    {
+        $VHDX_FILE = $FileBrowser.FileName
+
+        $Extension = [IO.Path]::GetExtension($VHDX_FILE)
+        if ($Extension -eq ".vhdx") {
+            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.Text = $VHDX_FILE
+        }
+        else {
+            [System.Windows.MessageBox]::Show('File extension is not .vhdx', 'File extension must be .vhdx', 'Ok', 'Warning')
         }
     }
 }
