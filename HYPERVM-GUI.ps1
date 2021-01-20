@@ -239,10 +239,25 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Anchor = 'left, right'
 # Add the textbox to the second row and fourth column
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX, 3, 1)
 
+# Create a table layout panel to have boot ISO textbox and browse button in the same cell
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL = New-Object System.Windows.Forms.TableLayoutPanel
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.AutoSize = $true
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.AutoSizeMode = 'GrowAndShrink'
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.Dock = 'Fill'
+
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.RowCount = 1
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.ColumnCount = 2
+
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.BackColor = 'White'
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.Anchor = 'top, left, right, bottom'
+
+# Add the table layout panel to the third row and fourth column
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL)
+
 # Create a label to select the Boot ISO for the virtual machine
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL = New-Object System.Windows.Forms.Label
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL.Text = 'Boot ISO'
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL.Anchor = 'left'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL.Anchor = 'right'
 
 # Add the label to the third row and third column
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_LABEL, 2, 2)
@@ -253,8 +268,17 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Multiline = $false
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Anchor = 'left, right'
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.ReadOnly = $true
 
-# Add the textbox to the third row and third column
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX, 3, 2)
+# Add the textbox to the first row and first column of the boot ISO table layout panel
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX, 1, 0)
+
+# Create a browse button to select the boot ISO for the virtual machine
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON = New-Object System.Windows.Forms.Button
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Text = 'Browse'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Anchor = 'left'
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.TextAlign = 'middlecenter'
+
+# Add the button to the first row and second column of the boot ISO table layout panel
+$HYPERVM_GUI_MAIN_PAGE_BOOT_ISO_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON, 0, 0)
 
 
 # This section is reserved for the second page, Virtual Machines
