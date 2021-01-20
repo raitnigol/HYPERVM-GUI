@@ -114,14 +114,24 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL = New-Object System.Windo
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Text = "Module: RSAT-Hyper-V-Tools has not yet been installed."
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
-$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'TopCenter'
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'middlecenter'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.BackColor = 'Gray'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.ForeColor = 'Black'
 
+# Add a label that when not installed, shows that you are running the script on a workstation
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL = New-Object System.Windows.Forms.Label
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Text = "This is a workstation, not a server. Please use a Windows Server"
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Dock = 'Bottom'
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.TextAlign = 'middlecenter'
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.BackColor = 'Gray'
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.ForeColor = 'Black'
+
+# Check what operating system type the computer runs and according to that add a label to the bottom of the screen, or not
 if ($OPERATING_SYSTEM_TYPE -eq "Workstation") {
-        $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
+        $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL)
 }
-elseif ($OPERATING_SYSTEM_TYPE -eq "Server") {
+elseif ($OPERATING_SYSTEM_TYPE -eq "Server" -or $OPERATING_SYSTEM_TYPE -eq "Domain-Controller") {
     $HYPER_V_TOOLS = Get-WindowsFeature -Name Hyper-V
     if ($HYPER_V_TOOLS.Installed -eq $true) {
         return $HYPERV_TOOLS.Installed
