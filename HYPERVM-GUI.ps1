@@ -1,29 +1,33 @@
-﻿<#
-This code is for making your life easier when you need to create Hyper-V virtual machines
-fast and easily.
-Just select the right parameters for your virtual machine and with a single press of a button,
-the script does everything magically for you.
-
-.NAME
+<#
+    This code is for making your life easier when you need to create Hyper-V virtual machines
+    fast and easily.
+    Just select the right parameters for your virtual machine and with a single press of a button,
+    the script does everything magically for you.
+    .NAME
     HYPERVM-GUI
 #>
 
 # First, initiate the form.
-Add-Type -AssemblyName System.Windows.Forms | Out-Null
-[System.Windows.Forms.Application]::EnableVisualStyles()
+
+
+
+Add-Type -AssemblyName PresentationFramework
+Add-Type -AssemblyName System.Drawing
+$null = Add-Type -AssemblyName System.Windows.Forms
+[Windows.Forms.Application]::EnableVisualStyles()
 
 # We want the GUI to autoscale, thus we need to get the current users display resolution
-$ClientSize = [System.Windows.Forms.SystemInformation]::PrimaryMonitorSize
+$ClientSize = [Windows.Forms.SystemInformation]::PrimaryMonitorSize
 $ClientWidth = $ClientSize.Width
 $ClientHeight = $ClientSize.Height
 
 # Check if the machine running the script is a server, a workstation or a domain controller
 $OPERATING_SYSTEM = Get-WmiObject -Class Win32_OperatingSystem
 $OPERATING_SYSTEM_TYPE = Switch ($OPERATING_SYSTEM.ProductType) {
-    "1" {"Workstation"; break}
-    "2" {"Domain-Controller"; break}
-    "3" {"Server"; break}
-    default {"Something went wrong"; break}
+    '1' {'Workstation'; break}
+    '2' {'Domain-Controller'; break}
+    '3' {'Server'; break}
+    default {'Something went wrong'; break}
 }
 
 # Add a icon to the GUI in base64
@@ -31,7 +35,6 @@ $ICON_BASE_64 = 'iVBORw0KGgoAAAANSUhEUgAAAPkAAAD6CAYAAABj2+E+AAAURklEQVR4Xu2dW1c
 $ICON_BYTES = [Convert]::FromBase64String($ICON_BASE_64)
 $STREAM = New-Object IO.MemoryStream($ICON_BYTES, 0, $ICON_BYTES.Length)
 $STREAM.Write($ICON_BYTES, 0, $ICON_BYTES.Length)
-$ICON_IMAGE = [System.Drawing.Image]::FromStream($STREAM, $true)
 
 # Get the version that PowerShell is running
 $PS_CURRENT_VERSION = $PSVersionTable.PSVersion
@@ -40,7 +43,20 @@ $PS_CURRENT_VERSION = $PSVersionTable.PSVersion
 $WINDOWS_CURRENT_VERSION = (Get-WmiObject -class Win32_OperatingSystem).Caption
 
 # Get the Windows RAM amount
-$TOTAL_CLIENT_MEMORY = Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | ForEach {'{0:N0}' -F (([math]::round(($_.Sum / 1GB),2)))}
+function Calculate-Ram
+{
+  param
+  (
+    [Parameter(Mandatory, ValueFromPipeline, HelpMessage='Data to process')]
+    [Object]$InputObject
+  )
+  process
+  {
+    '{0:N0}' -F (([math]::round(($InputObject.Sum / 1GB),2)))
+  }
+}
+
+$TOTAL_CLIENT_MEMORY = Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum | Calculate-Ram
 # Get the usable RAM amount
 $TOTAL_CLIENT_USABLE_MEMORY = $($TOTAL_CLIENT_MEMORY - 1)
 
@@ -54,7 +70,7 @@ $HYPERVM_GUI_MAIN_WINDOW.BackColor = 'White'
 $HYPERVM_GUI_MAIN_WINDOW.MinimumSize = "$($ClientWidth / 2), $($ClientHeight / 2)"
 
 # Add the icon to the form
-$HYPERVM_GUI_MAIN_WINDOW.Icon = [System.Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $STREAM).GetHicon())
+$HYPERVM_GUI_MAIN_WINDOW.Icon = [Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $STREAM).GetHicon())
 $HYPERVM_GUI_MAIN_WINDOW.BringToFront()
 
 
@@ -110,7 +126,7 @@ $TabControl.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE)
 
 # Add a label that when not installed, shows that the Hyper-V tools are not yet installed.
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL = New-Object System.Windows.Forms.Label
-$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Text = "Module: RSAT-Hyper-V-Tools has not yet been installed."
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Text = 'Module: RSAT-Hyper-V-Tools has not yet been installed.'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.TextAlign = 'middlecenter'
@@ -119,7 +135,7 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL.ForeColor = 'Black'
 
 # Add a label that when not installed, shows that you are running the script on a workstation
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL = New-Object System.Windows.Forms.Label
-$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Text = "This is a workstation, not a server. Please use a Windows Server"
+$HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Text = 'This is a workstation, not a server. Please use a Windows Server'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.Font = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.TextAlign = 'middlecenter'
@@ -127,13 +143,13 @@ $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.BackColor = '
 $HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL.ForeColor = 'Black'
 
 # Check what operating system type the computer runs and according to that add a label to the bottom of the screen, or not
-if ($OPERATING_SYSTEM_TYPE -eq "Workstation") {
+if ($OPERATING_SYSTEM_TYPE -eq 'Workstation') {
         $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_WORKSTATION_LABEL)
 }
-elseif ($OPERATING_SYSTEM_TYPE -eq "Server" -or $OPERATING_SYSTEM_TYPE -eq "Domain-Controller") {
+elseif ($OPERATING_SYSTEM_TYPE -eq 'Server' -or $OPERATING_SYSTEM_TYPE -eq 'Domain-Controller') {
     $HYPER_V_TOOLS = Get-WindowsFeature -Name Hyper-V
     if ($HYPER_V_TOOLS.Installed -eq $true) {
-        return $HYPERV_TOOLS.Installed
+        return $HYPER_V_TOOLS.Installed
     }
     else {
         $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
@@ -450,8 +466,81 @@ $HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL.Dock = 'Bottom'
 $HYPERVM_GUI_PROPERTIES_PAGE.Controls.Add($HYPERVM_GUI_PROPERTIES_PAGE_CLIENT_RAM_AMOUNT_LABEL)
 
 # Add logic and functions to the code
+# The code for removing unwanted characters from the textboxes
+function Remove-Unwanted-Characters {
+    # finds all characters that are not [~!@#$%^&*_+{}:"<>()?/.,`;+ ] and replaces them with '' (nothing)
+    if ($this.Text -match '[~!@#$%^&*_+{}:"<>()?/.,`;+ ]') {
+        $this.Text = $This.Text -replace '[~!@#$%^&*_+{}:"<>()?/.,`;+ ]',''
+        # Move the cursor to the end of the text
+        $this.SelectionStart = $this.Text.Length
+    }
+}
+
+function Remove-Letters {
+    # finds all characters that are not 0-9 and replaces them with '' (nothing)
+    if ($this.Text -match '[^0-9]') {
+        $this.Text = $This.Text -replace '[^0-9]',''
+        # Move the cursor to the end of the text
+        $this.SelectionStart = $this.Text.Length
+    }
+}
+
+function Update-Switch-Combobox-List {
+    $SWITCH_LIST = Get-VMSwitch | Select-Object -ExpandProperty Name
+    ForEach ($SWITCH in $SWITCH_LIST) {
+        $null = $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.Items.Add($SWITCH)
+    }
+    $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.SelectedIndex = 0
+}
+
+# The code for browsing when pressing the browse button
+function Browse-Iso-Files {
+  $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
+    Filter = '.iso files (*iso)|*.iso|All files(*.*)|*.*'
+    }
+    
+    $OpenDialog = $FileBrowser.ShowDialog()
+    
+    if ($OpenDialog -eq 'OK')
+    {
+        $BOOT_ISO = $FileBrowser.FileName
+
+        $Extension = [IO.Path]::GetExtension($BOOT_ISO)
+        if ($Extension -eq '.iso') {
+            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Text = $BOOT_ISO
+        }
+        else {
+            [Windows.MessageBox]::Show('File extension is not .iso', 'File extension must be .iso', 'Ok', 'Warning')
+        }
+    }
+}
+
+# The code for browsing when pressing the browse button
+function Browse-Vhdx-Files { 
+    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
+    Filter = '.vhdx files (*vhdx)|*.vhdx|All files(*.*)|**'
+    }
+
+    $OpenDialog = $FileBrowser.ShowDialog()
+
+    if ($OpenDialog -eq 'OK')
+    {
+        $VHDX_FILE = $FileBrowser.FileName
+
+        $Extension = [IO.Path]::GetExtension($VHDX_FILE)
+        if ($Extension -eq '.vhdx') {
+            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.Text = $VHDX_FILE
+        }
+        else {
+            [Windows.MessageBox]::Show('File extension is not .vhdx', 'File extension must be .vhdx', 'Ok', 'Warning')
+        }
+    }
+}
+
 # Add logic to the textboxes, remove all characters that are not [~!@#$%^&*_+{}:"<>()?/.,`;+ ]
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Add_TextChanged({Remove-Letters})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Add_TextChanged({Remove-Unwanted-Characters})
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({Remove-Letters})
@@ -462,73 +551,9 @@ $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click({Brow
 # Add logic to the vhd root browse button
 $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON.Add_Click({Browse-Vhdx-Files})
 
-# The code for removing the numbers from the textboxes
-function Remove-Letters {
-    # finds all characters that are not 0-9 and replaces them with '' (nothing)
-    if ($this.Text -match '[~!@#$%^&*_+{}:"<>()?/.,`;+ ]') {
-        $CURSOR_POS = $this.SelectionStart
-        $this.Text = $This.Text -replace '[~!@#$%^&*_+{}:"<>()?/.,`;+ ]',''
-        # Move the cursor to the end of the text
-        $this.SelectionStart = $this.Text.Length
-    }
-}
-
-function Update-Switch-Combobox-List {
-    $SWITCH_LIST = Get-VMSwitch | Select Name
-    ForEach ($SWITCH in $SWITCH_LIST) {
-        $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.Items.Add($SWITCH_LIST) | Out-Null
-    }
-    $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.SelectedIndex = 0
-}
-
-# The code for browsing when pressing the browse button
-function Browse-Iso-Files {
-    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
-    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
-    Filter = ".iso files (*iso)|*.iso|All files(*.*)|*.*"
-    }
-    
-    $OpenDialog = $FileBrowser.ShowDialog()
-    
-    if ($OpenDialog -eq "OK")
-    {
-        $BOOT_ISO = $FileBrowser.FileName
-
-        $Extension = [IO.Path]::GetExtension($BOOT_ISO)
-        if ($Extension -eq ".iso") {
-            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_TEXTBOX.Text = $BOOT_ISO
-        }
-        else {
-            [System.Windows.MessageBox]::Show('File extension is not .iso', 'File extension must be .iso', 'Ok', 'Warning')
-        }
-    }
-}
-
-# The code for browsing when pressing the browse button
-function Browse-Vhdx-Files { 
-    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
-    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
-    Filter = ".vhdx files (*vhdx)|*.vhdx|All files(*.*)|**"
-    }
-
-    $OpenDialog = $FileBrowser.ShowDialog()
-
-    if ($OpenDialog -eq "OK")
-    {
-        $VHDX_FILE = $FileBrowser.FileName
-
-        $Extension = [IO.Path]::GetExtension($VHDX_FILE)
-        if ($Extension -eq ".vhdx") {
-            $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_TEXTBOX.Text = $VHDX_FILE
-        }
-        else {
-            [System.Windows.MessageBox]::Show('File extension is not .vhdx', 'File extension must be .vhdx', 'Ok', 'Warning')
-        }
-    }
-}
 
 # Show the GUI
-[void]$HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
+$null = $HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
 
 
 # After closing the GUI, dispose of it
