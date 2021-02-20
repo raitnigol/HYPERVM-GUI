@@ -18,8 +18,8 @@ $null = Add-Type -AssemblyName System.Windows.Forms
 
 # We want the GUI to autoscale, thus we need to get the current users display resolution
 $ClientSize = [Windows.Forms.SystemInformation]::PrimaryMonitorSize
-$ClientWidth = $ClientSize.Width
-$ClientHeight = $ClientSize.Height
+$ClientWidth = [math]::FLoor($ClientSize.Width)
+$ClientHeight = [math]::FLoor($ClientSize.Height)
 
 # Check if the machine running the script is a server, a workstation or a domain controller
 $OPERATING_SYSTEM = Get-WmiObject -Class Win32_OperatingSystem
@@ -47,7 +47,7 @@ function Calculate-Ram
 {
   param
   (
-    [Parameter(Mandatory, ValueFromPipeline, HelpMessage='Data to process')]
+    [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage='Data to process')]
     [Object]$InputObject
   )
   process
@@ -62,12 +62,12 @@ $TOTAL_CLIENT_USABLE_MEMORY = $($TOTAL_CLIENT_MEMORY - 1)
 
 # Build the form
 $HYPERVM_GUI_MAIN_WINDOW = New-Object System.Windows.Forms.Form
-$HYPERVM_GUI_MAIN_WINDOW.ClientSize = "$($ClientWidth / 1.5), $($ClientHeight / 1.5)"
+$HYPERVM_GUI_MAIN_WINDOW.ClientSize = "$([math]::Floor($($ClientWidth / 1.5))), $([math]::Floor($($ClientHeight / 1.5)))"
 $HYPERVM_GUI_MAIN_WINDOW.Text = 'HYPERVM-GUI'
 $HYPERVM_GUI_MAIN_WINDOW.TopMost = $false
 $HYPERVM_GUI_MAIN_WINDOW.StartPosition = 'CenterScreen'
 $HYPERVM_GUI_MAIN_WINDOW.BackColor = 'White'
-$HYPERVM_GUI_MAIN_WINDOW.MinimumSize = "$($ClientWidth / 2), $($ClientHeight / 2)"
+$HYPERVM_GUI_MAIN_WINDOW.MinimumSize = "$([math]::Floor($($ClientWidth / 2))), $([math]::Floor($($ClientHeight / 2)))"
 
 # Add the icon to the form
 $HYPERVM_GUI_MAIN_WINDOW.Icon = [Drawing.Icon]::FromHandle((New-Object System.Drawing.Bitmap -Argument $STREAM).GetHicon())
@@ -149,7 +149,7 @@ if ($OPERATING_SYSTEM_TYPE -eq 'Workstation') {
 elseif ($OPERATING_SYSTEM_TYPE -eq 'Server' -or $OPERATING_SYSTEM_TYPE -eq 'Domain-Controller') {
     $HYPER_V_TOOLS = Get-WindowsFeature -Name Hyper-V
     if ($HYPER_V_TOOLS.Installed -eq $true) {
-        return $HYPER_V_TOOLS.Installed
+        $HYPER_V_TOOLS_INSTALLED = $true
     }
     else {
         $HYPERVM_GUI_MAIN_PAGE.Controls.Add($HYPERVM_GUI_MAIN_WINDOW_INSTALLED_HYPER_V_TOOLS_LABEL)
@@ -394,6 +394,7 @@ $HYPERVM_GUI_MAIN_PAGE_VHD_ROOT_TABLE_LAYOUT_PANEL.Controls.Add($HYPERVM_GUI_MAI
 # Add a datagridview to list all currently available virtual machines
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW = New-Object System.Windows.Forms.DataGridView
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSize = 'true'
+$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSizeRowsMode = 'allcells'
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Dock = 'Fill'
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Anchor = 'top, left'
 $HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.AutoSizeColumnsMode = 'Fill'
@@ -487,6 +488,7 @@ function Remove-Letters {
 
 function Update-Switch-Combobox-List {
     $SWITCH_LIST = Get-VMSwitch | Select-Object -ExpandProperty Name
+    $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.Items.Add('No Connection')
     ForEach ($SWITCH in $SWITCH_LIST) {
         $null = $HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_SWITCH_COMBOBOX.Items.Add($SWITCH)
     }
@@ -539,21 +541,44 @@ function Browse-Vhdx-Files {
     }
 }
 
+function Update-VirtualMachines-List {
+    function Get-VirtualMachinesData {
+        param (
+        [Object]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Data to process")]
+        $InputObject
+        )
+
+        process {
+            $TotalVirtualMachines += 1
+            $MemoryAssignedRam = [math]::round($InputObject.MemoryStartup / 1GB)
+            [void]$HYPERVM_GUI_DATAGRIDVIEW_PAGE_DATAGRIDVIEW.Rows.Add($InputObject.Name, $InputObject.State, $InputObject.CPUUsage, $MemoryAssignedRam, $InputObject.Uptime, $InputObject.Status, $InputObject.Version)                                
+        }
+    }
+Get-VM | Get-VirtualMachinesData
+}
+
+
+# Run the scripts only if the server has HYPER-V tools installed.
+if ($HYPER_V_TOOLS_INSTALLED -eq $true) {
+  Update-VirtualMachines-List
+  Update-Switch-Combobox-List
+}
+
 # Add logic to the textboxes, remove all characters that are not [~!@#$%^&*_+{}:"<>()?/.,`;+ ]
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Add_TextChanged({Remove-Unwanted-Characters})
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged({Remove-Letters})
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged({Remove-Letters})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CREATE_VM_TEXTBOX.Add_TextChanged{Remove-Unwanted-Characters}
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_RAM_AMOUNT_TEXTBOX.Add_TextChanged{Remove-Letters}
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_CPU_COUNT_TEXTBOX.Add_TextChanged{Remove-Letters}
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VLAN_ID_TEXTBOX.Add_TextChanged{Remove-Letters}
 
 # Add logic to the boot iso browse button
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click({Browse-Iso-Files})
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_BOOT_ISO_BROWSE_BUTTON.Add_Click{Browse-Iso-Files}
 
 # Add logic to the vhd root browse button
-$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON.Add_Click({Browse-Vhdx-Files})
-
+$HYPERVM_GUI_MAIN_PAGE_TABLE_LAYOUT_PANEL_VHD_ROOT_BROWSE_BUTTON.Add_Click{Browse-Vhdx-Files}
 
 # Show the GUI
-$null = $HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
+[void]$HYPERVM_GUI_MAIN_WINDOW.ShowDialog()
 
 
 # After closing the GUI, dispose of it
